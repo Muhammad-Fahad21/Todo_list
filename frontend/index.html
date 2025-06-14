@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple TODO App</title>
+  </head>
+  <body>
+    <h1>TODO List</h1>
+    <input type="text" id="taskInput" placeholder="Enter task" />
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+      async function fetchTasks() {
+        const response = await fetch('http://localhost:3000/tasks');
+        const tasks = await response.json();
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = '';
+        tasks.forEach((task) => {
+          const li = document.createElement('li');
+          li.textContent = task.task; // <-- FIXED THIS LINE
+          taskList.appendChild(li);
+        });
+      }
+
+      async function addTask() {
+        const input = document.getElementById('taskInput');
+        const task = input.value;
+
+        await fetch('http://localhost:3000/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ task }),
+        });
+
+        input.value = '';
+        fetchTasks();
+      }
+
+      fetchTasks();
+    </script>
+  </body>
+</html>
